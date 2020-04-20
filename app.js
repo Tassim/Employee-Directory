@@ -5,13 +5,10 @@ const Employee = require("./lib/Employee");
 const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
-const util = require("util");
 const OUTPUT_DIR = path.resolve(__dirname, "output")
 const outputPath = path.join(OUTPUT_DIR, "team.html");
 const render = require("./lib/htmlRenderer");
 const employees = [];
-
-// const writeFileAsync = util.promisify(fs.writeFile);
 
 const basicQuestions = [
     {
@@ -60,66 +57,29 @@ const internQuestion = [
       message: "Which school do you study?"
     }
 ];
+
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
 
 function promptUser() {
     inquirer.prompt(basicQuestions)
-    .then(function(response){
+    .then(async function(response){
         if (response.role === "Manager"){
-            var managerResponse = inquirer.prompt(managerQuestion);
+            var managerResponse = await inquirer.prompt(managerQuestion);
             var manager = new Manager(response.name, response.id, response.email, managerResponse.officeNumber);
-        }
-        if (response.role === "Engineer"){
-            var engineerResponse = inquirer.prompt(engineerQuestion);
+            employees.push(manager);
+        } else if (response.role === "Engineer"){
+            var engineerResponse = await inquirer.prompt(engineerQuestion);
             var engineer = new Engineer(response.name, response.id, response.email, engineerResponse.github);
-        }
-        if (response.role === "Intern"){
-            var internResponse = inquirer.prompt(internQuestion);
+            employees.push(engineer);
+        } else if (response.role === "Intern"){
+            var internResponse = await inquirer.prompt(internQuestion);
             var intern = new Intern(response.name, response.id, response.email, internResponse.school);
+            employees.push(intern);
         }
-    // var html = render(employees);
-    // return writeFileAsync(outputPath, html);
-                // render(employees);
-
-        fs.writeFile(outputPath, render(employees), function(err) {
-            if (err){
-                console.log(err);
-            }
-                console.log("Data entered!")
-        });
-
+        promptToAdd();
     })
 };
-
-promptUser();
-
-
-
-// async function init() {
-//     console.log ("hi");
-//     try {
-//         var employee = await promptUser();
-
-//         console.log(employee)
-
-//         var html = await render(employee);
-
-//         // await writeFileAsyns(outputPath, html);
-
-//         // console.log("Successfully wrote to index.html");
-//     } catch(err) {
-//         console.log(err);
-//     }
-// }
-
-// init();
-
-
-
-
-
-
 
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
@@ -127,6 +87,35 @@ promptUser();
 // After you have your html, you're now ready to create an HTML file using the HTML
 // returned from the `render` function. Now write it to a file named `team.html` in the
 // `output` folder. You can use the variable `outputPath` above target this location.
+
+function promptToAdd() {
+    inquirer.prompt({
+        type: "confirm",
+        name: "addEmployee",
+        message: "Would you like to add an employee?"
+    }).then(function(response) {
+        console.log(response);
+        if(response.addEmployee) {
+            promptUser();
+        }else {
+            if(employees.length > 0) {
+                console.log("employees", employees);
+                fs.writeFile(outputPath, render(employees), function(err) {
+                    if (err){
+                        console.log(err);
+                    }
+                        console.log("Data entered!");
+                });
+            } else{
+                console.log("Good-bye!");
+            }
+        }
+    })
+}
+promptToAdd();
+
+
+
 // Hint: you may need to check if the `output` folder exists and create it if it
 // does not.
 // HINT: each employee type (manager, engineer, or intern) has slightly different
@@ -137,49 +126,3 @@ promptUser();
 // for further information. Be sure to test out each class and verify it generates an 
 // object with the correct structure and methods. This structure will be crucial in order
 // for the provided `render` function to work!
-
-
-
-
-
-
-
-// promptUser()
-//     .then(function(response) {
-//         const html = render(emplyees);
-
-//         fs.writeFile(outputPath, employees);
-
-//         .then(function() {
-//             console.log("Successfully wrote to index.html");
-//           })
-// });
-
-
-// function promptUser() {
-//     const response = inquirer.prompt(basicQuestions)
-
-//         if (response.role === "Manager"){
-//             var managerResponse = inquirer.prompt(managerQuestion);
-//             const manager = new Manager(response.name, response.id, response.email, managerResponse.officeNumber);
-//         }
-//         if (response.role === "Engineer"){
-//             var engineerResponse = inquirer.prompt(engineerQuestion);
-//             const engineer = new Engineer(response.name, response.id, response.email, engineerResponse.github);
-//         }
-
-//         if (response.role === "Intern"){
-//             var internResponse = inquirer.prompt(internQuestion);
-//             const intern = new Intern(response.name, response.id, response.email, internResponse.school);
-//         }
-//         // var html = render(employees);
-//         // return writeFileAsync(outputPath, html);
-
-//         // fs.writeFile(outputPath, employees, function(err) {
-//         //     if (err){
-//         //         console.log(err);
-//         //     }
-//         //         console.log("Data entered!")
-//         // });
-
-//     }
