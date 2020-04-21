@@ -23,6 +23,6 @@ The dependencies are, [jest](https://jestjs.io/) for running the provided tests,
   * github (only engineers)
   * school (only Interns)
 
-![GIF](./assets/screenshotApp.png)
+![screenshot](./Assets/img/screenshotApp.png)
 
-![Link to app] (https://tassim.github.io/homework8/)
+![Link to: Template Engine] (https://tassim.github.io/homework8/)
