@@ -94,12 +94,10 @@ function promptToAdd() {
         name: "addEmployee",
         message: "Would you like to add an employee?"
     }).then(function(response) {
-        console.log(response);
         if(response.addEmployee) {
             promptUser();
         }else {
             if(employees.length > 0) {
-                console.log("employees", employees);
                 fs.writeFile(outputPath, render(employees), function(err) {
                     if (err){
                         console.log(err);
@@ -113,8 +111,6 @@ function promptToAdd() {
     })
 }
 promptToAdd();
-
-
 
 // Hint: you may need to check if the `output` folder exists and create it if it
 // does not.
